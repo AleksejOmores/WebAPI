@@ -7,17 +7,17 @@ namespace PZ_webAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class OrdersController : ControllerBase
     {
         private readonly string connestingString;
 
-        public ProductsController(IConfiguration configuration)
+        public OrdersController(IConfiguration configuration)
         {
             connestingString = configuration["ConnectionStrings:DefaultConnection"] ?? "";
         }
 
         [HttpPost]
-        public IActionResult CreateProduct(ProductDTO productDTO)
+        public IActionResult CreateOrders(OrdersDTO ordersDTO)
         {
             try
             {
@@ -25,13 +25,15 @@ namespace PZ_webAPI.Controllers
                 {
                     connection.Open();
 
-                    string sql = "Insert into Products " +
-                        "(ProductName, Price) Values " +
-                        "(@ProductName, @Price)";
+                    string sql = "Insert into Orders " +
+                        "(UsersID, OrderDate, TotalAmount) Values " +
+                        "(@UsersID, @OrderDate, @TotalAmount)";
+
                     using (var command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.AddWithValue("@ProductName", productDTO.ProductName);
-                        command.Parameters.AddWithValue("@Price", productDTO.Price);
+                        command.Parameters.AddWithValue("@UsersID", ordersDTO.UserID);
+                        command.Parameters.AddWithValue("@OrderDate", ordersDTO.OrderDate);
+                        command.Parameters.AddWithValue("@TotalAmount", ordersDTO.TotalAmount);
 
                         command.ExecuteNonQuery();
                     }
@@ -39,22 +41,22 @@ namespace PZ_webAPI.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Products","Извините, произошла ошибка");
+                ModelState.AddModelError("Orders", "Извините, произошла ошибка");
                 return BadRequest(ModelState);
             }
             return Ok();
         }
         [HttpGet]
-        public IActionResult GetProducts()
+        public IActionResult GetOrders()
         {
-            List<Products> products = new List<Products>();
+            List<Orders> orders = new List<Orders>();
 
             try
             {
                 using (var connection = new SqlConnection(connestingString))
                 {
                     connection.Open();
-                    string sql = "Select * from Products";
+                    string sql = "Select * from Orders";
 
                     using (var command = new SqlCommand(sql, connection))
                     {
@@ -62,13 +64,14 @@ namespace PZ_webAPI.Controllers
                         {
                             while (reader.Read())
                             {
-                                Products product = new Products();
+                                Orders order = new Orders();
 
-                                product.ProductID = reader.GetInt32(0);
-                                product.ProductName = reader.GetString(1);
-                                product.Price = reader.GetInt32(2);
+                                order.OrderID = reader.GetInt32(0);
+                                //order.UserID = reader.();
+                                //order.OrderDate = reader.GetDateTime(2);
+                                order.TotalAmount = reader.GetDecimal(3);
 
-                                products.Add(product);
+                                orders.Add(order);
                             }
                         }
                     }
@@ -76,22 +79,22 @@ namespace PZ_webAPI.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Products", "Извините, произошла ошибка");
+                ModelState.AddModelError("Orders", "Извините, произошла ошибка");
                 return BadRequest(ModelState);
             }
-            return Ok(products);
+            return Ok(users);
         }
         [HttpGet("{id}")]
-        public IActionResult GetProduct(int id)
+        public IActionResult GetOrders(int id)
         {
-            Products products = new Products();
+            Orders orders = new Orders();
             try
             {
                 using (var connection = new SqlConnection(connestingString))
                 {
                     connection.Open();
 
-                    string sql = "Select * from Products Where ProductID=@id";
+                    string sql = "Select * from Orders Where UserID=@id";
 
                     using (var command = new SqlCommand(sql, connection))
                     {
@@ -101,9 +104,9 @@ namespace PZ_webAPI.Controllers
                         {
                             if (reader.Read())
                             {
-                                products.ProductID = reader.GetInt32(0);
-                                products.ProductName = reader.GetString(1);
-                                products.Price = reader.GetInt32(2);
+                                users.UserID = reader.GetInt32(0);
+                                users.UserName = reader.GetString(1);
+                                users.Email = reader.GetString(2);
                             }
                             else
                             {
@@ -115,13 +118,13 @@ namespace PZ_webAPI.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Products", "Извините, произошла ошибка");
+                ModelState.AddModelError("Orders", "Извините, произошла ошибка");
                 return BadRequest(ModelState);
             }
-            return Ok(products);
+            return Ok(users);
         }
         [HttpPut("{id}")]
-        public IActionResult UpdateProduct(int id, ProductDTO productDTO)
+        public IActionResult UpdateOrders(int id, UsersDTO usersDTO)
         {
             try
             {
@@ -129,12 +132,12 @@ namespace PZ_webAPI.Controllers
                 {
                     connection.Open();
 
-                    string sql = "UPDATE Products SET ProductName=@ProductName, Price=@Price WHERE ProductID=@id";
+                    string sql = "UPDATE Products SET UserName=@UserName, Email=@Email WHERE UserID=@id";
 
                     using (var command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.AddWithValue("@ProductName", productDTO.ProductName);
-                        command.Parameters.AddWithValue("@Price", productDTO.Price);
+                        command.Parameters.AddWithValue("@UserName", usersDTO.UserName);
+                        command.Parameters.AddWithValue("@Email", usersDTO.Email);
                         command.Parameters.AddWithValue("@id", id);
 
                         command.ExecuteNonQuery();
@@ -143,14 +146,14 @@ namespace PZ_webAPI.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Products", "Извините, произошла ошибка");
+                ModelState.AddModelError("Orders", "Извините, произошла ошибка");
                 return BadRequest(ModelState);
             }
 
             return Ok();
         }
         [HttpDelete("{id}")]
-        public IActionResult DeleteProduct(int id)
+        public IActionResult DeleteOrders(int id)
         {
             try
             {
@@ -158,7 +161,7 @@ namespace PZ_webAPI.Controllers
                 {
                     connection.Open();
 
-                    string sql = "Delete from Products Where ProductID = @id";
+                    string sql = "Delete from Orders Where UserID = @id";
 
                     using (var command = new SqlCommand(sql, connection))
                     {
@@ -170,7 +173,7 @@ namespace PZ_webAPI.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Products", "Извините, произошла ошибка");
+                ModelState.AddModelError("Orders", "Извините, произошла ошибка");
                 return BadRequest(ModelState);
             }
 

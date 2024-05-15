@@ -7,17 +7,17 @@ namespace PZ_webAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly string connestingString;
 
-        public ProductsController(IConfiguration configuration)
+        public UsersController(IConfiguration configuration)
         {
             connestingString = configuration["ConnectionStrings:DefaultConnection"] ?? "";
         }
 
         [HttpPost]
-        public IActionResult CreateProduct(ProductDTO productDTO)
+        public IActionResult CreateUsers(UsersDTO usersDTO)
         {
             try
             {
@@ -25,13 +25,14 @@ namespace PZ_webAPI.Controllers
                 {
                     connection.Open();
 
-                    string sql = "Insert into Products " +
-                        "(ProductName, Price) Values " +
-                        "(@ProductName, @Price)";
+                    string sql = "Insert into Users " +
+                        "(UserName, Email) Values " +
+                        "(@UserName, @Email)";
+
                     using (var command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.AddWithValue("@ProductName", productDTO.ProductName);
-                        command.Parameters.AddWithValue("@Price", productDTO.Price);
+                        command.Parameters.AddWithValue("@UserName", usersDTO.UserName);
+                        command.Parameters.AddWithValue("@Email", usersDTO.Email);
 
                         command.ExecuteNonQuery();
                     }
@@ -39,22 +40,22 @@ namespace PZ_webAPI.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Products","Извините, произошла ошибка");
+                ModelState.AddModelError("Users", "Извините, произошла ошибка");
                 return BadRequest(ModelState);
             }
             return Ok();
         }
         [HttpGet]
-        public IActionResult GetProducts()
+        public IActionResult GetUsers()
         {
-            List<Products> products = new List<Products>();
+            List<Users> users = new List<Users>();
 
             try
             {
                 using (var connection = new SqlConnection(connestingString))
                 {
                     connection.Open();
-                    string sql = "Select * from Products";
+                    string sql = "Select * from Users";
 
                     using (var command = new SqlCommand(sql, connection))
                     {
@@ -62,13 +63,13 @@ namespace PZ_webAPI.Controllers
                         {
                             while (reader.Read())
                             {
-                                Products product = new Products();
+                                Users user = new Users();
 
-                                product.ProductID = reader.GetInt32(0);
-                                product.ProductName = reader.GetString(1);
-                                product.Price = reader.GetInt32(2);
+                                user.UserID = reader.GetInt32(0);
+                                user.UserName = reader.GetString(1);
+                                user.Email = reader.GetString(2);
 
-                                products.Add(product);
+                                users.Add(user);
                             }
                         }
                     }
@@ -76,22 +77,22 @@ namespace PZ_webAPI.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Products", "Извините, произошла ошибка");
+                ModelState.AddModelError("Users", "Извините, произошла ошибка");
                 return BadRequest(ModelState);
             }
-            return Ok(products);
+            return Ok(users);
         }
         [HttpGet("{id}")]
-        public IActionResult GetProduct(int id)
+        public IActionResult GetUsers(int id)
         {
-            Products products = new Products();
+            Users users = new Users();
             try
             {
                 using (var connection = new SqlConnection(connestingString))
                 {
                     connection.Open();
 
-                    string sql = "Select * from Products Where ProductID=@id";
+                    string sql = "Select * from Users Where UserID=@id";
 
                     using (var command = new SqlCommand(sql, connection))
                     {
@@ -101,9 +102,9 @@ namespace PZ_webAPI.Controllers
                         {
                             if (reader.Read())
                             {
-                                products.ProductID = reader.GetInt32(0);
-                                products.ProductName = reader.GetString(1);
-                                products.Price = reader.GetInt32(2);
+                                users.UserID = reader.GetInt32(0);
+                                users.UserName = reader.GetString(1);
+                                users.Email = reader.GetString(2);
                             }
                             else
                             {
@@ -115,13 +116,13 @@ namespace PZ_webAPI.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Products", "Извините, произошла ошибка");
+                ModelState.AddModelError("Users", "Извините, произошла ошибка");
                 return BadRequest(ModelState);
             }
-            return Ok(products);
+            return Ok(users);
         }
         [HttpPut("{id}")]
-        public IActionResult UpdateProduct(int id, ProductDTO productDTO)
+        public IActionResult UpdateUsers(int id, UsersDTO usersDTO)
         {
             try
             {
@@ -129,12 +130,12 @@ namespace PZ_webAPI.Controllers
                 {
                     connection.Open();
 
-                    string sql = "UPDATE Products SET ProductName=@ProductName, Price=@Price WHERE ProductID=@id";
+                    string sql = "UPDATE Products SET UserName=@UserName, Email=@Email WHERE UserID=@id";
 
                     using (var command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.AddWithValue("@ProductName", productDTO.ProductName);
-                        command.Parameters.AddWithValue("@Price", productDTO.Price);
+                        command.Parameters.AddWithValue("@UserName", usersDTO.UserName);
+                        command.Parameters.AddWithValue("@Email", usersDTO.Email);
                         command.Parameters.AddWithValue("@id", id);
 
                         command.ExecuteNonQuery();
@@ -143,14 +144,14 @@ namespace PZ_webAPI.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Products", "Извините, произошла ошибка");
+                ModelState.AddModelError("Users", "Извините, произошла ошибка");
                 return BadRequest(ModelState);
             }
 
             return Ok();
         }
         [HttpDelete("{id}")]
-        public IActionResult DeleteProduct(int id)
+        public IActionResult DeleteUsers(int id)
         {
             try
             {
@@ -158,7 +159,7 @@ namespace PZ_webAPI.Controllers
                 {
                     connection.Open();
 
-                    string sql = "Delete from Products Where ProductID = @id";
+                    string sql = "Delete from Users Where UserID = @id";
 
                     using (var command = new SqlCommand(sql, connection))
                     {
@@ -170,7 +171,7 @@ namespace PZ_webAPI.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Products", "Извините, произошла ошибка");
+                ModelState.AddModelError("Users", "Извините, произошла ошибка");
                 return BadRequest(ModelState);
             }
 
