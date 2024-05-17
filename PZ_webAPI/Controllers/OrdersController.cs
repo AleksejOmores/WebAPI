@@ -65,10 +65,11 @@ namespace PZ_webAPI.Controllers
                             while (reader.Read())
                             {
                                 Orders order = new Orders();
+                                Users users = new Users();
 
                                 order.OrderID = reader.GetInt32(0);
-                                //order.UserID = reader.();
-                                //order.OrderDate = reader.GetDateTime(2);
+                                //order.UserID = reader.GetString(1);
+                                //order.OrderDate = reader.getdatetime(2);
                                 order.TotalAmount = reader.GetDecimal(3);
 
                                 orders.Add(order);
@@ -82,7 +83,7 @@ namespace PZ_webAPI.Controllers
                 ModelState.AddModelError("Orders", "Извините, произошла ошибка");
                 return BadRequest(ModelState);
             }
-            return Ok(users);
+            return Ok(orders);
         }
         [HttpGet("{id}")]
         public IActionResult GetOrders(int id)
@@ -104,9 +105,9 @@ namespace PZ_webAPI.Controllers
                         {
                             if (reader.Read())
                             {
-                                users.UserID = reader.GetInt32(0);
-                                users.UserName = reader.GetString(1);
-                                users.Email = reader.GetString(2);
+                                //users.UserID = reader.GetInt32(0);
+                                //users.UserName = reader.GetString(1);
+                                //users.Email = reader.GetString(2);
                             }
                             else
                             {
@@ -121,7 +122,7 @@ namespace PZ_webAPI.Controllers
                 ModelState.AddModelError("Orders", "Извините, произошла ошибка");
                 return BadRequest(ModelState);
             }
-            return Ok(users);
+            return Ok(orders);
         }
         [HttpPut("{id}")]
         public IActionResult UpdateOrders(int id, UsersDTO usersDTO)

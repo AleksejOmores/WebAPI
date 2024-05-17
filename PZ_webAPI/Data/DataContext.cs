@@ -20,11 +20,9 @@ namespace PZ_webAPI.Data
             modelBuilder.Entity<Users>()
                 .HasKey(us => new {us.UserID});
             modelBuilder.Entity<Orders>()
-                .HasKey(ord => new { ord.OrderID });
+                .HasKey(ord => ord.OrderID);
             modelBuilder.Entity<Products>()
                 .HasKey(prod => new { prod.ProductID });
-            modelBuilder.Entity<OrderDetails>()
-                .HasKey(ordD => new { ordD.OrderID, ordD.ProductID });
         }
     }
 }

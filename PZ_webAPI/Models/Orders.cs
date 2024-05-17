@@ -1,4 +1,6 @@
-﻿namespace PZ_webAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PZ_webAPI.Models
 {
     public class Orders
     {
